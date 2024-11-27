@@ -1,0 +1,10 @@
+services:
+  service:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
+    command: ["./main"]
