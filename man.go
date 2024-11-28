@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 // Estrutura para armazenar as informações de temperatura
@@ -18,13 +20,23 @@ type TemperatureResponse struct {
 
 // Função principal
 func main() {
+	// Carregar as variáveis de ambiente do arquivo .env
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Printf("Erro ao carregar o arquivo .env: %v\n", err)
+		os.Exit(1)
+	}
+
 	http.HandleFunc("/weather", weatherHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 	fmt.Printf("Server is listening on port %s...\n", port)
-	http.ListenAndServe(":"+port, nil)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		fmt.Printf("Failed to start server: %v\n", err)
+		os.Exit(1)
+	}
 }
 
 // Manipulador HTTP para o endpoint /weather
@@ -104,6 +116,7 @@ func getCityFromCEP(cep string) (string, error) {
 func getTemperature(city string) (float64, error) {
 	apiKey := os.Getenv("WEATHER_API_KEY")
 	if apiKey == "" {
+		fmt.Println("Weather API key not set")
 		return 0, fmt.Errorf("Weather API key not set")
 	}
 
@@ -115,6 +128,7 @@ func getTemperature(city string) (float64, error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
+		fmt.Printf("Failed to make request: %v\n", err)
 		return 0, err
 	}
 	defer resp.Body.Close()
@@ -127,6 +141,7 @@ func getTemperature(city string) (float64, error) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Printf("Failed to read response body: %v\n", err)
 		return 0, err
 	}
 
@@ -138,6 +153,7 @@ func getTemperature(city string) (float64, error) {
 
 	err = json.Unmarshal(body, &data)
 	if err != nil {
+		fmt.Printf("Failed to unmarshal response: %v\n", err)
 		return 0, err
 	}
 

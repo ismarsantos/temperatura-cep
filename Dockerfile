@@ -1,6 +1,4 @@
 # Dockerfile para rodar os testes e iniciar o serviço
-
-# Etapa de build
 FROM golang:1.19-alpine AS builder
 
 WORKDIR /app
@@ -10,7 +8,7 @@ RUN apk add --no-cache gcc musl-dev
 
 # Copiar os arquivos de dependência
 COPY go.mod .
-# COPY go.sum .
+COPY go.sum .
 RUN go mod download
 
 # Copiar o código do projeto
@@ -20,9 +18,9 @@ COPY . .
 RUN go test -v
 
 # Compilar a aplicação
-RUN go build -o main .
+RUN go build -o /app/main .
 
-# Etapa final para a execução da aplicação
+# Etapa final
 FROM alpine:latest
 
 WORKDIR /app
@@ -30,9 +28,14 @@ WORKDIR /app
 # Copiar o binário compilado da etapa anterior
 COPY --from=builder /app/main .
 
-RUN echo "WEATHER_API_KEY: $WEATHER_API_KEY"
+# Copiar o arquivo .env para a imagem final
+COPY .env .
 
+# Instalar dependências para rodar a aplicação
+RUN apk add --no-cache ca-certificates
+
+# Expor a porta que será usada pelo serviço
 EXPOSE 8080
 
 # Executar o servidor
-CMD ["./main"]
+CMD ["/bin/sh", "-c", "./main"]
