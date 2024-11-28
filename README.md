@@ -4,6 +4,13 @@ README.md:
 
 Este projeto é uma aplicação Go que recebe um CEP brasileiro, recupera a cidade correspondente e retorna o clima atual em Celsius, Fahrenheit e Kelvin. A aplicação utiliza a [API ViaCEP](https://viacep.com.br/) para obter informações de localização e a [WeatherAPI](https://www.weatherapi.com/) para buscar os dados do clima.
 
+
+### Google Cloud Run Demo
+
+```sh
+curl "https://temperatura-cep-675408290066.us-central1.run.app/weather?cep=01001000"
+```
+
 ## Estrutura do Projeto
 
 ```
@@ -58,8 +65,8 @@ docker-compose up --build
 ```
 
 Este comando iniciará os seguintes serviços:
+
 - **weather-service**: A aplicação principal que lida com as requisições para obter dados de clima.
-- **weatherapi-mock**: Um servidor mock usado para simular a WeatherAPI.
 - **test**: Um serviço para executar testes automatizados.
 
 O serviço de clima estará disponível em [http://localhost:8080/weather](http://localhost:8080/weather).
@@ -83,7 +90,7 @@ go test -v
 Para testar a aplicação, você pode fazer uma requisição GET para o endpoint `/weather` com um CEP válido. Por exemplo:
 
 ```sh
-curl "http://localhost:8080/weather?zipcode=01001000"
+curl "http://localhost:8080/weather?cep=01001000"
 ```
 
 Se bem-sucedido, você receberá uma resposta similar à seguinte:
@@ -99,6 +106,3 @@ Se bem-sucedido, você receberá uma resposta similar à seguinte:
 ## Notas
 
 - Certifique-se de que o `WEATHERAPI_KEY` é válido e que sua máquina tem acesso à internet para consultar a WeatherAPI.
-- O serviço `weatherapi-mock` é usado para fins de demonstração e não fornece dados reais de clima.
-
-
