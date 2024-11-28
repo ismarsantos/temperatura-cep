@@ -35,4 +35,4 @@ RUN echo "WEATHER_API_KEY: $WEATHER_API_KEY"
 EXPOSE 8080
 
 # Executar o servidor
-CMD ["/bin/sh", "-c", "./main & go test -v && fg"]
+CMD ["./main"]
